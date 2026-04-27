@@ -41,9 +41,17 @@ export default function DoctorDashboard() {
 
   const myAppointments = appointments.filter((a) => a.doctorId === doctorId);
   const myRecords = records.filter((r) => r.doctorId === doctorId);
+  const today = new Date().toISOString().slice(0, 10);
+  const upcomingAppointments = myAppointments
+    .filter((a) => a.status === 'booked')
+    .sort((a, b) => `${a.appointmentDate} ${a.appointmentTime}`.localeCompare(`${b.appointmentDate} ${b.appointmentTime}`));
 
   const stats = [
-    { label: 'Today', value: myAppointments.filter((a) => a.status === 'booked').length, icon: CalendarCheck },
+    {
+      label: 'Today',
+      value: myAppointments.filter((a) => a.status === 'booked' && a.appointmentDate === today).length,
+      icon: CalendarCheck
+    },
     { label: 'Completed', value: myAppointments.filter((a) => a.status === 'completed').length, icon: ClipboardList },
     { label: 'Patients', value: new Set(myAppointments.map((a) => a.patientId)).size, icon: Users }
   ];
@@ -63,10 +71,10 @@ export default function DoctorDashboard() {
               <p className="text-sm text-slate-500">Loading...</p>
             ) : (
               <>
-                {myAppointments.slice(0, 4).map((appt) => (
+                {upcomingAppointments.slice(0, 4).map((appt) => (
                   <AppointmentCard key={appt.id} appointment={appt} />
                 ))}
-                {myAppointments.length === 0 && <p className="text-sm text-slate-500">No visits scheduled.</p>}
+                {upcomingAppointments.length === 0 && <p className="text-sm text-slate-500">No visits scheduled.</p>}
               </>
             )}
           </div>

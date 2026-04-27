@@ -235,12 +235,12 @@ export default function RegisterPage() {
             </p>
           </div>
           <div className="hidden bg-gradient-to-br from-slate-900 to-brand-600 p-10 text-white md:block">
-            <p className="text-sm uppercase tracking-[0.2em]">Production ready</p>
-            <h3 className="mt-4 text-2xl font-semibold">Built for Agile teams</h3>
+            <p className="text-sm uppercase tracking-[0.2em]">Hospital workflow</p>
+            <h3 className="mt-4 text-2xl font-semibold">One account opens the right hospital workspace</h3>
             <ul className="mt-6 space-y-3 text-sm text-brand-50/90">
-              <li>• Sprint-aligned features</li>
-              <li>• Clean, scalable React architecture</li>
-              <li>• Tailwind-powered components</li>
+              <li>• Patients can book OPD appointments and view medical records</li>
+              <li>• Doctors can track assigned visits and consultation notes</li>
+              <li>• Admins can monitor appointments, records, and hospital activity</li>
             </ul>
           </div>
         </div>

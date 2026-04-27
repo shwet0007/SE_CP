@@ -7,6 +7,7 @@ Frontend is production-ready (Vite + React + Tailwind). Backend APIs are impleme
 - `frontend/` — Vite React app with Tailwind, role-based dashboards, booking & records UI.
 - `backend/` — Express + Sequelize API with auth, appointments, records, prescriptions, notifications, reports, seeders, and tests.
 - `docs/api.md` — REST surface reference.
+- `docs/syllabus-alignment.md` — Software Engineering syllabus mapping with requirements, Agile plan, UML-style diagrams, architecture, and design patterns.
 
 ## Tech Stack
 - Frontend: React 18, Vite 5, Tailwind 3, React Router 6, lucide icons, dayjs.
@@ -25,9 +26,14 @@ npm run dev
 cd backend
 npm install
 # add .env from backend/.env.example
-npm run dev                 # starts API on :5000
-node src/seeders/seed.js    # load sample data
+npm run dev                 # starts API on PORT from .env (5001 locally)
+npm run seed                # reset/load sample data
 ```
+
+## Demo Credentials
+- Patient: `ananya.sharma@example.com` / `password`
+- Doctor: `asha.iyer@example.com` / `password`
+- Admin: `admin@example.com` / `password`
 
 ## Environment Variables
 - `frontend/.env.example` — `VITE_API_URL` for pointing to the API (defaults to `http://localhost:5000/api`).
@@ -44,6 +50,9 @@ node src/seeders/seed.js    # load sample data
 - *As a patient* I can book a slot with a specialist so that I get confirmed time. **AC**: requires valid token, slot availability check, success returns booking ID, status `booked`.
 - *As a doctor* I can see today’s patients in one view. **AC**: shows name/reason/time, sortable by time, hides cancelled.
 - *As an admin* I can view weekly utilization. **AC**: API returns counts by status and specialization; filters by date range.
+
+## Syllabus Fit
+This project aligns with the Software Engineering syllabus through incremental/RAD process planning, requirements engineering, Scrum artifacts, static and dynamic interaction models, layered client-server MVC architecture, and design-pattern mapping. See `docs/syllabus-alignment.md` for the full unit-wise mapping.
 
 ## Testing
 - Frontend runs on Vite dev server.

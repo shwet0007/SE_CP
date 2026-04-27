@@ -16,6 +16,8 @@ afterAll(async () => {
 });
 
 describe('Appointments', () => {
+  const futureDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+
   it('lists appointments', async () => {
     const res = await request(app).get('/api/appointments').set('Authorization', `Bearer ${token}`);
     expect(res.status).toBe(200);
@@ -26,7 +28,7 @@ describe('Appointments', () => {
     const res = await request(app)
       .post('/api/appointments')
       .set('Authorization', `Bearer ${token}`)
-      .send({ patientId: 1, doctorId: 1, appointmentDate: '2026-04-02', appointmentTime: '11:00', reason: 'Follow-up' });
+      .send({ patientId: 1, doctorId: 1, appointmentDate: futureDate, appointmentTime: '11:00', reason: 'Follow-up' });
     expect(res.status).toBe(201);
     expect(res.body.status).toBe('booked');
   });

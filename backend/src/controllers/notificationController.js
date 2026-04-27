@@ -1,7 +1,7 @@
 import { Notification } from '../models/index.js';
 
 export const listNotifications = async (req, res) => {
-  const notifications = await Notification.findAll({ where: { userId: req.user.id } });
+  const notifications = await Notification.findAll({ where: { userId: req.user.id }, order: [['id', 'DESC']] });
   res.json(notifications);
 };
 

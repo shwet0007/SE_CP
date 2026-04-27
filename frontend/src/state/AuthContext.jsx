@@ -13,6 +13,11 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     const init = async () => {
+      const token = localStorage.getItem('shr-token');
+      if (!token) {
+        setLoading(false);
+        return;
+      }
       try {
         const me = await meApi();
         setUser(me);
@@ -37,8 +42,8 @@ export function AuthProvider({ children }) {
     return u;
   };
 
-  const register = async ({ name, email, role, password }) => {
-    const u = await registerApi({ name, email, role, password });
+  const register = async (payload) => {
+    const u = await registerApi(payload);
     setUser(u);
     return u;
   };

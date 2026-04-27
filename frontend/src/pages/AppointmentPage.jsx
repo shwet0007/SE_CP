@@ -48,23 +48,27 @@ export default function AppointmentPage() {
   }, [items, filters, user]);
 
   const handleBook = async (appointment) => {
+    setError('');
     try {
       const created = await createAppointment(appointment);
       setItems((list) => [created, ...list]);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to book');
+      throw err;
     }
   };
 
   return (
     <DashboardLayout role={user?.role || 'patient'} title="Appointments" subtitle="Book, reschedule, and track visits">
       <div className="grid gap-4 lg:grid-cols-2">
-        <SectionCard
-          title="Book appointment"
-          action={<Badge label={`${items.filter((i) => i.status === 'booked').length} active`} variant="booked" />}
-        >
-          <AppointmentForm onBook={handleBook} />
-        </SectionCard>
+        {user?.role === 'patient' && (
+          <SectionCard
+            title="Book appointment"
+            action={<Badge label={`${items.filter((i) => i.status === 'booked').length} active`} variant="booked" />}
+          >
+            <AppointmentForm onBook={handleBook} />
+          </SectionCard>
+        )}
 
         <SectionCard
           title="Filters"

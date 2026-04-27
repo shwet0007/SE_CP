@@ -10,10 +10,10 @@ const getDoctor = (appointment) =>
 const getPatient = (appointment) =>
   appointment.Patient || patients.find((p) => p.id === appointment.patientId) || { id: appointment.patientId };
 
-const getSpecialization = (appointment) =>
-  appointment.Doctor?.Specialization?.name ||
-  specializations.find((s) => s.id === appointment.specializationId || appointment.Doctor?.specializationId)?.name ||
-  'Specialist';
+const getSpecialization = (appointment, doctor) => {
+  const specializationId = appointment.Doctor?.specializationId ?? appointment.specializationId ?? doctor?.specializationId;
+  return appointment.Doctor?.Specialization?.name || specializations.find((s) => s.id === specializationId)?.name || 'Specialist';
+};
 
 export default function AppointmentCard({ appointment }) {
   const doctor = getDoctor(appointment);
@@ -25,7 +25,7 @@ export default function AppointmentCard({ appointment }) {
           <Stethoscope className="text-brand-600" size={18} />
           <div>
             <p className="font-semibold text-slate-800">{doctor?.User?.name || doctor?.name}</p>
-            <p className="text-xs text-slate-500">{getSpecialization(appointment)}</p>
+            <p className="text-xs text-slate-500">{getSpecialization(appointment, doctor)}</p>
           </div>
         </div>
         <Badge label={appointment.status} variant={appointment.status} />

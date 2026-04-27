@@ -16,6 +16,7 @@ describe('Auth', () => {
     const res = await request(app).post('/api/auth/login').send({ email: 'ananya.sharma@example.com', password: 'password' });
     expect(res.status).toBe(200);
     expect(res.body.token).toBeDefined();
+    expect(res.body.user.passwordHash).toBeUndefined();
   });
 
   it('rejects bad credentials', async () => {

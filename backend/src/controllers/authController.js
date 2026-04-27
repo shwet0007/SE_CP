@@ -3,6 +3,19 @@ import { signToken } from '../utils/jwt.js';
 import { hashPassword, verifyPassword } from '../middleware/auth.js';
 import sequelize from '../config/database.js';
 
+const ROLES = ['patient', 'doctor', 'admin'];
+
+const toNullableNumber = (value) => {
+  if (value === undefined || value === null || value === '') return null;
+  const number = Number(value);
+  return Number.isNaN(number) ? null : number;
+};
+
+const publicUser = (user, extras = {}) => {
+  const { passwordHash, ...safeUser } = user.toJSON();
+  return { ...safeUser, ...extras };
+};
+
 export const register = async (req, res) => {
   const t = await sequelize.transaction();
   try {
@@ -24,9 +37,15 @@ export const register = async (req, res) => {
     } = req.body;
 
     role = role?.toLowerCase()?.trim();
+    email = email?.toLowerCase()?.trim();
+    name = name?.trim();
     if (!name || !email || !password || !role) {
       await t.rollback();
       return res.status(400).json({ message: 'Missing fields' });
+    }
+    if (!ROLES.includes(role)) {
+      await t.rollback();
+      return res.status(400).json({ message: 'Invalid role' });
     }
 
     const exists = await User.findOne({ where: { email }, transaction: t });
@@ -42,7 +61,7 @@ export const register = async (req, res) => {
       await Patient.create(
         {
           userId: user.id,
-          age: age ?? null,
+          age: toNullableNumber(age),
           gender: gender ?? null,
           phone: phone ?? null,
           address: address ?? null,
@@ -93,8 +112,8 @@ export const register = async (req, res) => {
           userId: user.id,
           specializationId: spec.id,
           qualification: qualification ?? null,
-          experienceYears: experienceYears ?? null,
-          consultationFee: consultationFee ?? null
+          experienceYears: toNullableNumber(experienceYears),
+          consultationFee: toNullableNumber(consultationFee)
         },
         { transaction: t }
       );
@@ -104,27 +123,29 @@ export const register = async (req, res) => {
     const patient = role === 'patient' ? await Patient.findOne({ where: { userId: user.id } }) : null;
     const doctor = role === 'doctor' ? await Doctor.findOne({ where: { userId: user.id } }) : null;
     const token = signToken({ id: user.id, role: user.role });
-    return res.status(201).json({ token, user: { ...user.toJSON(), patientId: patient?.id, doctorId: doctor?.id } });
+    return res.status(201).json({ token, user: publicUser(user, { patientId: patient?.id, doctorId: doctor?.id }) });
   } catch (err) {
-    await t.rollback();
+    if (!t.finished) await t.rollback();
     return res.status(500).json({ message: err.message || 'Failed to register' });
   }
 };
 
 export const login = async (req, res) => {
   const { email, password } = req.body;
-  const user = await User.findOne({ where: { email } });
+  const normalizedEmail = email?.toLowerCase()?.trim();
+  if (!normalizedEmail || !password) return res.status(400).json({ message: 'Missing fields' });
+  const user = await User.findOne({ where: { email: normalizedEmail } });
   if (!user) return res.status(401).json({ message: 'Invalid credentials' });
   const ok = await verifyPassword(password, user.passwordHash);
   if (!ok) return res.status(401).json({ message: 'Invalid credentials' });
   const patient = user.role === 'patient' ? await Patient.findOne({ where: { userId: user.id } }) : null;
   const doctor = user.role === 'doctor' ? await Doctor.findOne({ where: { userId: user.id } }) : null;
   const token = signToken({ id: user.id, role: user.role });
-  return res.json({ token, user: { ...user.toJSON(), patientId: patient?.id, doctorId: doctor?.id } });
+  return res.json({ token, user: publicUser(user, { patientId: patient?.id, doctorId: doctor?.id }) });
 };
 
 export const me = async (req, res) => {
   const patient = req.user.role === 'patient' ? await Patient.findOne({ where: { userId: req.user.id } }) : null;
   const doctor = req.user.role === 'doctor' ? await Doctor.findOne({ where: { userId: req.user.id } }) : null;
-  return res.json({ user: { ...req.user.toJSON(), patientId: patient?.id, doctorId: doctor?.id } });
+  return res.json({ user: publicUser(req.user, { patientId: patient?.id, doctorId: doctor?.id }) });
 };

@@ -1,7 +1,15 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { specializations } from '../data/mockData';
+import { doctors as mockDoctors, specializations } from '../data/mockData';
 import { useAuth } from '../state/AuthContext';
 import { fetchDoctors } from '../api/doctors';
+
+const today = new Date().toISOString().slice(0, 10);
+
+const normalizeDoctor = (doctor) => ({
+  id: doctor.id,
+  name: doctor.User?.name || doctor.name,
+  specializationId: doctor.specializationId || doctor.specialization_id || doctor.Specialization?.id
+});
 
 export default function AppointmentForm({ onBook }) {
   const { user } = useAuth();
@@ -22,16 +30,10 @@ export default function AppointmentForm({ onBook }) {
       setError('');
       try {
         const data = await fetchDoctors();
-        setDoctors(
-          (data || []).map((d) => ({
-            id: d.id,
-            name: d.User?.name || d.name,
-            specializationId: d.specializationId || d.specialization_id || d.Specialization?.id
-          }))
-        );
+        setDoctors((data || []).map(normalizeDoctor));
       } catch (_) {
-        setError('Unable to load doctors from server');
-        setDoctors([]);
+        setError('Showing sample doctors because the server is unavailable');
+        setDoctors(mockDoctors.map(normalizeDoctor));
       } finally {
         setLoading(false);
       }
@@ -44,18 +46,22 @@ export default function AppointmentForm({ onBook }) {
     return doctors.filter((d) => d.specializationId === Number(form.specializationId));
   }, [form.specializationId, doctors]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!form.doctorId || !form.date || !form.time) return;
-    onBook({
-      patientId: user?.patientId || user?.id || 1,
-      doctorId: Number(form.doctorId),
-      appointmentDate: form.date,
-      appointmentTime: form.time,
-      status: 'booked',
-      reason: form.reason || 'General consultation'
-    });
-    setForm({ specializationId: '', doctorId: '', date: '', time: '', reason: '' });
+    try {
+      await onBook({
+        patientId: user?.patientId || user?.id || 1,
+        doctorId: Number(form.doctorId),
+        appointmentDate: form.date,
+        appointmentTime: form.time,
+        status: 'booked',
+        reason: form.reason || 'General consultation'
+      });
+      setForm({ specializationId: '', doctorId: '', date: '', time: '', reason: '' });
+    } catch (_) {
+      // The parent page shows the booking error.
+    }
   };
 
   return (
@@ -82,7 +88,7 @@ export default function AppointmentForm({ onBook }) {
           value={form.doctorId}
           onChange={(e) => setForm((f) => ({ ...f, doctorId: e.target.value }))}
           required
-          disabled={loading || !!error}
+          disabled={loading}
         >
           <option value="">{loading ? 'Loading...' : 'Select'}</option>
           {filteredDoctors.map((d) => (
@@ -97,6 +103,7 @@ export default function AppointmentForm({ onBook }) {
         Date
         <input
           type="date"
+          min={today}
           className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm focus:border-brand-400 focus:outline-none"
           value={form.date}
           onChange={(e) => setForm((f) => ({ ...f, date: e.target.value }))}

@@ -19,11 +19,14 @@ export default function Sidebar({ role }) {
     patient: [
       { to: '/patient', label: 'Dashboard', icon: 'dashboard' },
       { to: '/appointments', label: 'Appointments', icon: 'appointments' },
-      { to: '/records', label: 'Medical Records', icon: 'records' }
+      { to: '/records', label: 'Medical Records', icon: 'records' },
+      { to: '/notifications', label: 'Notifications', icon: 'notifications' }
     ],
     doctor: [
       { to: '/doctor', label: 'Dashboard', icon: 'dashboard' },
-      { to: '/records', label: 'Patient Records', icon: 'records' }
+      { to: '/appointments', label: 'Appointments', icon: 'appointments' },
+      { to: '/records', label: 'Patient Records', icon: 'records' },
+      { to: '/notifications', label: 'Notifications', icon: 'notifications' }
     ],
     admin: [
       { to: '/admin', label: 'Dashboard', icon: 'dashboard' },
@@ -39,7 +42,7 @@ export default function Sidebar({ role }) {
         <Brand />
       </div>
       <nav className="mt-8 flex flex-col gap-2">
-        {navItems[role].map((item) => {
+        {(navItems[role] || navItems.patient).map((item) => {
           const Icon = icons[item.icon];
           return (
             <NavLink

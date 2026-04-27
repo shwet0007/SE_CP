@@ -2,8 +2,9 @@ import React from 'react';
 import { ClipboardCheck, User, Stethoscope } from 'lucide-react';
 import { doctors, patients } from '../data/mockData';
 
-const doctorName = (id) => doctors.find((d) => d.id === id)?.name || 'Doctor';
-const patientName = (id) => patients.find((p) => p.id === id)?.id || id;
+const doctorName = (record) => record.Doctor?.User?.name || doctors.find((d) => d.id === record.doctorId)?.name || 'Doctor';
+const patientName = (record) =>
+  record.Patient?.User?.name || patients.find((p) => p.id === record.patientId)?.name || `Patient #${record.patientId}`;
 
 export default function RecordCard({ record }) {
   return (
@@ -17,10 +18,10 @@ export default function RecordCard({ record }) {
       </div>
       <div className="mt-2 grid gap-2 text-sm text-slate-600 md:grid-cols-2">
         <p className="flex items-center gap-2">
-          <User size={16} className="text-slate-500" /> Patient: {patientName(record.patientId)}
+          <User size={16} className="text-slate-500" /> Patient: {patientName(record)}
         </p>
         <p className="flex items-center gap-2">
-          <Stethoscope size={16} className="text-slate-500" /> Doctor: {doctorName(record.doctorId)}
+          <Stethoscope size={16} className="text-slate-500" /> Doctor: {doctorName(record)}
         </p>
         <p>
           <span className="font-semibold text-slate-700">Diagnosis: </span>

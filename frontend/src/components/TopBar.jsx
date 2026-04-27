@@ -4,7 +4,7 @@ import { useAuth } from '../state/AuthContext';
 
 export default function TopBar({ title, subtitle }) {
   const { user, logout } = useAuth();
-   const [time, setTime] = React.useState(new Date());
+  const [time, setTime] = React.useState(new Date());
 
   React.useEffect(() => {
     const t = setInterval(() => setTime(new Date()), 60000);
@@ -17,6 +17,12 @@ export default function TopBar({ title, subtitle }) {
     if (h < 18) return 'Good afternoon';
     return 'Good evening';
   })();
+  const initials = user?.name
+    ?.split(' ')
+    .map((part) => part[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase();
 
   return (
     <header className="flex items-center justify-between rounded-3xl bg-white px-4 py-3 shadow-soft">
@@ -40,7 +46,13 @@ export default function TopBar({ title, subtitle }) {
           <span className="absolute -right-1 -top-1 h-3 w-3 rounded-full bg-amber-400" />
         </button>
         <div className="flex items-center gap-2 rounded-full bg-slate-100 px-3 py-2">
-          <img className="h-8 w-8 rounded-full object-cover" src={user?.avatar} alt={user?.name} />
+          {user?.avatar ? (
+            <img className="h-8 w-8 rounded-full object-cover" src={user.avatar} alt={user?.name} />
+          ) : (
+            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-100 text-xs font-semibold text-brand-700">
+              {initials || 'U'}
+            </span>
+          )}
           <div className="text-xs">
             <p className="font-medium text-slate-800">{user?.name}</p>
             <p className="text-slate-500 capitalize">{user?.role}</p>

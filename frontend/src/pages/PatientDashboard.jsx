@@ -4,7 +4,12 @@ import DashboardLayout from '../layouts/DashboardLayout';
 import StatCard from '../components/StatCard';
 import AppointmentCard from '../components/AppointmentCard';
 import SectionCard from '../components/SectionCard';
-import { appointments as mockAppointments, medicalRecords as mockRecords, specializations } from '../data/mockData';
+import {
+  appointments as mockAppointments,
+  doctors as mockDoctors,
+  medicalRecords as mockRecords,
+  specializations
+} from '../data/mockData';
 import { useAuth } from '../state/AuthContext';
 import { fetchAppointments } from '../api/appointments';
 import { fetchRecords } from '../api/records';
@@ -15,7 +20,7 @@ export default function PatientDashboard() {
   const [search, setSearch] = useState('');
   const [appointments, setAppointments] = useState(mockAppointments);
   const [records, setRecords] = useState(mockRecords);
-  const [doctors, setDoctors] = useState([]);
+  const [doctors, setDoctors] = useState(mockDoctors);
   const [loading, setLoading] = useState(true);
   const patientId = user?.role === 'patient' ? user?.patientId || user.id : 1;
 
@@ -40,7 +45,7 @@ export default function PatientDashboard() {
           }))
         );
       } catch (_) {
-        setDoctors([]);
+        setDoctors(mockDoctors);
       } finally {
         setLoading(false);
       }
@@ -69,7 +74,7 @@ export default function PatientDashboard() {
         .toLowerCase()
         .includes(search.toLowerCase())
     );
-  }, [search]);
+  }, [search, doctors]);
 
   return (
     <DashboardLayout role="patient" title="Patient workspace" subtitle="Track appointments and health records">

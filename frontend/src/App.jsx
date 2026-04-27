@@ -8,6 +8,7 @@ import DoctorDashboard from './pages/DoctorDashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import AppointmentPage from './pages/AppointmentPage';
 import MedicalRecordsPage from './pages/MedicalRecordsPage';
+import NotificationsPage from './pages/NotificationsPage';
 import NotFound from './pages/NotFound';
 import ProtectedRoute from './components/ProtectedRoute';
 import { useAuth } from './state/AuthContext';
@@ -59,6 +60,14 @@ export default function App() {
         element={
           <ProtectedRoute roles={['patient', 'doctor', 'admin']}>
             <MedicalRecordsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/notifications"
+        element={
+          <ProtectedRoute roles={['patient', 'doctor', 'admin']}>
+            <NotificationsPage />
           </ProtectedRoute>
         }
       />
