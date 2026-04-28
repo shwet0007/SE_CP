@@ -7,6 +7,7 @@ import Appointment from './Appointment.js';
 import MedicalRecord from './MedicalRecord.js';
 import Prescription from './Prescription.js';
 import Notification from './Notification.js';
+import DoctorAvailability from './DoctorAvailability.js';
 
 // Associations
 User.hasOne(Patient, { foreignKey: 'userId' });
@@ -24,6 +25,9 @@ Appointment.belongsTo(Patient, { foreignKey: 'patientId' });
 Doctor.hasMany(Appointment, { foreignKey: 'doctorId' });
 Appointment.belongsTo(Doctor, { foreignKey: 'doctorId' });
 
+Doctor.hasMany(DoctorAvailability, { foreignKey: 'doctorId' });
+DoctorAvailability.belongsTo(Doctor, { foreignKey: 'doctorId' });
+
 Patient.hasMany(MedicalRecord, { foreignKey: 'patientId' });
 MedicalRecord.belongsTo(Patient, { foreignKey: 'patientId' });
 
@@ -32,6 +36,12 @@ MedicalRecord.belongsTo(Doctor, { foreignKey: 'doctorId' });
 
 MedicalRecord.hasMany(Prescription, { foreignKey: 'medicalRecordId' });
 Prescription.belongsTo(MedicalRecord, { foreignKey: 'medicalRecordId' });
+
+Patient.hasMany(Prescription, { foreignKey: 'patientId' });
+Prescription.belongsTo(Patient, { foreignKey: 'patientId' });
+
+Doctor.hasMany(Prescription, { foreignKey: 'doctorId' });
+Prescription.belongsTo(Doctor, { foreignKey: 'doctorId' });
 
 User.hasMany(Notification, { foreignKey: 'userId' });
 Notification.belongsTo(User, { foreignKey: 'userId' });
@@ -45,5 +55,6 @@ export {
   Appointment,
   MedicalRecord,
   Prescription,
-  Notification
+  Notification,
+  DoctorAvailability
 };

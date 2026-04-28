@@ -1,0 +1,711 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>SRS Smart Hospital Appointment and Record Management System</title>
+  <style>
+    @page {
+      size: Letter;
+      margin: 0.85in 0.82in;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      color: #000;
+      background: #fff;
+      font-family: "Times New Roman", Times, serif;
+      font-size: 12pt;
+      line-height: 1.48;
+    }
+
+    .page {
+      page-break-after: always;
+    }
+
+    .page:last-child {
+      page-break-after: auto;
+    }
+
+    .blank-page {
+      height: 9.25in;
+    }
+
+    .title-page {
+      text-align: center;
+      padding-top: 0.15in;
+    }
+
+    .main-title {
+      max-width: 7.1in;
+      margin: 0 auto 1.25in;
+      font-size: 18pt;
+      font-weight: 700;
+      line-height: 1.7;
+      text-align: justify;
+      text-align-last: center;
+    }
+
+    .authors-title {
+      margin-bottom: 0.35in;
+      font-size: 12pt;
+      font-weight: 700;
+    }
+
+    .author {
+      margin: 0 0 0.27in;
+      line-height: 1.25;
+    }
+
+    h1,
+    h2,
+    h3 {
+      margin: 0 0 0.15in;
+      font-weight: 700;
+      line-height: 1.25;
+    }
+
+    h1 {
+      font-size: 14pt;
+    }
+
+    h2 {
+      margin-top: 0.12in;
+      font-size: 13pt;
+    }
+
+    h3 {
+      margin-top: 0.08in;
+      font-size: 12pt;
+    }
+
+    p {
+      margin: 0 0 0.15in;
+      text-align: justify;
+    }
+
+    .keywords {
+      margin-top: 0.1in;
+      text-align: justify;
+    }
+
+    ul {
+      margin: 0.08in 0 0.18in 0.42in;
+      padding-left: 0.1in;
+    }
+
+    li {
+      margin-bottom: 0.07in;
+      text-align: justify;
+    }
+
+    .spacer {
+      height: 0.16in;
+    }
+
+    .indent-heading {
+      margin-left: 0.2in;
+    }
+
+    .small-gap {
+      margin-bottom: 0.08in;
+    }
+  </style>
+</head>
+<body>
+  <section class="page title-page">
+    <div class="main-title">
+      Software Requirement Specification for A Smart Hospital Appointment and Record Management System
+    </div>
+
+    <div class="authors-title">Authors</div>
+
+    <div class="author">
+      <strong>Atharva Patil</strong><br />
+      Department of Computer Science and Engineering (Artificial Intelligence)<br />
+      Vishwakarma Institute of Technology, Pune, India<br />
+      Email: atharva.patil23@vit.edu
+    </div>
+
+    <div class="author">
+      <strong>Swaraj Patil</strong><br />
+      Department of Computer Science and Engineering (Artificial Intelligence)<br />
+      Vishwakarma Institute of Technology, Pune, India<br />
+      Email: swaraj.patil23@vit.edu
+    </div>
+
+    <div class="author">
+      <strong>Kavish Paraswar</strong><br />
+      Department of Computer Science and Engineering (Artificial Intelligence)<br />
+      Vishwakarma Institute of Technology, Pune, India<br />
+      Email: kavish.paraswar23@vit.edu
+    </div>
+
+    <div class="author">
+      <strong>Shwetkumar Ramrteke</strong><br />
+      Department of Computer Science and Engineering (Artificial Intelligence)<br />
+      Vishwakarma Institute of Technology, Pune, India<br />
+      Email: shwetkumar.ramrteke232@vit.edu
+    </div>
+  </section>
+
+  <section class="page">
+    <h1>Abstract</h1>
+    <p>
+      Healthcare appointment and record management systems have become an important part of modern hospital
+      operations. Manual scheduling, paper-based medical records, and disconnected communication between
+      patients, doctors, and administrators can cause delays, data inconsistency, and poor visibility into patient
+      care activities. A smart hospital platform reduces these problems by providing a centralized digital system
+      for appointment booking, doctor availability, medical record management, prescriptions, notifications, and
+      administrative reporting.
+    </p>
+    <p>
+      This paper presents a detailed Software Requirement Specification (SRS) for a Smart Hospital Appointment
+      and Record Management System. The proposed system is a role-based full-stack web application that
+      supports patient self-service booking, doctor scheduling, real-time appointment lifecycle management,
+      clinical record creation, prescription storage, notification delivery, and admin-level monitoring. The system
+      uses secure authentication and authorization so that patients, doctors, and administrators access only the
+      features and data permitted for their roles.
+    </p>
+    <p>
+      The specification defines the system purpose, scope, stakeholders, functional requirements, non-functional
+      requirements, constraints, and hardware and software requirements. It also explains the requirement
+      engineering approach used to identify, analyze, classify, and document the requirements. The document is
+      intended to provide a clear foundation for design, development, testing, validation, and future enhancement
+      of the hospital management platform.
+    </p>
+    <p class="keywords">
+      <strong>Keywords:</strong> Software Requirement Specification, Smart Hospital System, Appointment
+      Management, Medical Records, Prescriptions, Requirement Engineering, Healthcare Software, Role-Based
+      Access Control
+    </p>
+  </section>
+
+  <section class="page">
+    <h1>1&nbsp;&nbsp;Introduction</h1>
+    <p>
+      Hospitals and clinics manage a large number of daily interactions between patients, doctors, and
+      administrative staff. These interactions include patient registration, doctor discovery, appointment booking,
+      visit management, clinical documentation, prescriptions, notifications, and operational reporting. When these
+      activities are handled manually or through disconnected tools, the hospital may face appointment conflicts,
+      delayed communication, misplaced records, and limited visibility into the current workload.
+    </p>
+    <p>
+      The Smart Hospital Appointment and Record Management System is designed to provide a unified digital
+      platform for these essential healthcare workflows. The system enables patients to register, log in, view real
+      doctors, select available doctor slots, book appointments, reschedule or cancel bookings, and view their
+      medical records and prescriptions. Doctors can manage availability, view upcoming visits, complete
+      appointments, create medical records, and issue prescriptions. Administrators can monitor doctors, patients,
+      appointments, and summary reports.
+    </p>
+    <p>
+      From a software engineering perspective, the system represents a practical healthcare application that
+      combines authentication, role-based access control, relational data modeling, REST APIs, appointment
+      lifecycle management, and secure record access. A well-defined SRS is necessary because healthcare
+      systems must handle sensitive information, accurate scheduling, and controlled access to records.
+    </p>
+    <p>
+      This document describes the requirements for the proposed system in a structured manner. It focuses on
+      what the system should do, how different users should interact with it, and what quality constraints must be
+      satisfied to make the software reliable, usable, maintainable, and secure.
+    </p>
+
+    <h1>2&nbsp;&nbsp;Background and Related Context</h1>
+    <p>
+      Many healthcare organizations still depend on front-desk scheduling, paper registers, separate prescription
+      files, and manual communication. Such processes can work for small workloads, but they become difficult to
+      manage when patient volume increases. Doctors need a clear view of their upcoming visits, patients need
+      reliable information about available slots, and administrators need accurate reports for decision-making.
+    </p>
+    <p>
+      Modern hospital systems use web-based and database-backed platforms to improve these workflows. A
+      digital system can store structured information about users, doctors, patients, appointments, availability
+      slots, medical records, prescriptions, notifications, and reports. It can also enforce rules such as preventing
+      unauthorized record access, avoiding double booking of doctor slots, and allowing only doctors to create
+      clinical records.
+    </p>
+    <p>
+      The proposed project follows this direction by using a React frontend, an Express backend API, Sequelize
+      models, MySQL persistence, JWT authentication, bcrypt password hashing, and role-based middleware. The
+      system is developed incrementally so that authentication, appointments, records, prescriptions, notifications,
+      and reports can be delivered and tested as separate but connected modules.
+    </p>
+  </section>
+
+  <section class="page">
+    <h1>3&nbsp;&nbsp;Problem Statement</h1>
+    <p>
+      Designing a hospital appointment and record management system is challenging because the software must
+      coordinate multiple users, sensitive data, and time-based operations. Patients require a simple booking
+      experience, doctors require accurate visit queues and record tools, and administrators require reliable
+      monitoring. Without a structured software system, hospitals may face the following problems:
+    </p>
+    <ul>
+      <li>Appointment conflicts caused by manual slot allocation or duplicate bookings.</li>
+      <li>Difficulty in finding real doctor availability and selecting valid appointment times.</li>
+      <li>Delayed access to patient history, medical records, and prescriptions.</li>
+      <li>Weak control over who can view or modify sensitive healthcare data.</li>
+      <li>Limited administrative visibility into appointment status, doctors, patients, and reports.</li>
+      <li>Poor traceability between requirements, implementation, and testing.</li>
+    </ul>
+    <p>
+      The problem addressed in this SRS is the need for a clear, comprehensive, and human-readable specification
+      for a real database-backed hospital web application. The specification must define the system boundaries,
+      user roles, functional behavior, quality attributes, constraints, and platform requirements so that development
+      and testing can be performed with clarity.
+    </p>
+  </section>
+
+  <section class="page">
+    <h1>4&nbsp;&nbsp;System Overview</h1>
+
+    <h2>4.1&nbsp;&nbsp;Purpose of the System</h2>
+    <p>
+      The primary purpose of the Smart Hospital Appointment and Record Management System is to provide a
+      secure, reliable, and user-friendly platform that connects patients, doctors, and administrators. The system
+      aims to reduce manual scheduling effort, prevent booking conflicts, improve medical record availability, and
+      support hospital-level monitoring through digital workflows.
+    </p>
+    <p>
+      The system also supports doctor availability management. Instead of allowing patients to select any random
+      appointment time, the platform provides booking based on real availability slots created by doctors. This
+      makes the appointment workflow more accurate and closer to a real hospital scenario.
+    </p>
+
+    <h2>4.2&nbsp;&nbsp;Scope of the System</h2>
+    <p>The scope of the system includes:</p>
+    <ul>
+      <li>Patient, doctor, and administrator registration and login.</li>
+      <li>Secure JWT-based authentication and role-based protected access.</li>
+      <li>Doctor listing with specialization, qualification, experience, and consultation fee.</li>
+      <li>Doctor availability slot creation and deletion.</li>
+      <li>Patient appointment booking using real available slots.</li>
+      <li>Appointment listing, rescheduling, cancellation, deletion, and completion.</li>
+      <li>Doctor visit workflow with medical record creation and optional prescription creation.</li>
+      <li>Patient access to medical records and prescriptions.</li>
+      <li>Notification support for appointment and record-related events.</li>
+      <li>Administrative summary reports for appointments, doctors, and specializations.</li>
+    </ul>
+
+    <h2>4.3&nbsp;&nbsp;Stakeholders and User Classes</h2>
+    <p>The system serves the following stakeholders:</p>
+    <ul>
+      <li><strong>Patients:</strong> Users who book appointments, manage bookings, and view medical records.</li>
+      <li><strong>Doctors:</strong> Users who manage availability, consult patients, create records, and issue prescriptions.</li>
+      <li><strong>Administrators:</strong> Users who monitor hospital activity, reports, doctors, and patients.</li>
+      <li><strong>Hospital Staff:</strong> Operational users who benefit from reduced manual scheduling work.</li>
+      <li><strong>Academic Evaluators:</strong> Reviewers who validate the project against software engineering principles.</li>
+    </ul>
+  </section>
+
+  <section class="page blank-page"></section>
+
+  <section class="page">
+    <h1>5&nbsp;&nbsp;Requirement Engineering Methodology</h1>
+    <p>
+      Requirement Engineering (RE) is a disciplined process used to identify, analyze, document, validate, and
+      manage the requirements of a software system. In a healthcare application, requirement engineering is
+      especially important because the system deals with sensitive patient information, role-based permissions,
+      appointment timing, and clinical documentation. Any ambiguity in requirements can lead to incorrect access,
+      missed appointments, or incomplete patient records.
+    </p>
+    <p>
+      In this project, the requirement engineering methodology follows a structured approach aligned with standard
+      software engineering practices. Requirements are derived from hospital workflows, stakeholder goals, and
+      the implemented project modules. The process emphasizes clarity, feasibility, testability, and traceability.
+    </p>
+
+    <h2>5.1&nbsp;&nbsp;System Identification and Domain Understanding</h2>
+    <p>
+      The first step was identifying the system as a smart hospital appointment and record management platform.
+      The domain includes patient registration, doctor scheduling, appointment booking, visit completion, clinical
+      record storage, prescription management, notifications, and administrative reporting. Understanding this
+      domain helped define core entities such as users, patients, doctors, specializations, appointments,
+      availability slots, medical records, prescriptions, and notifications.
+    </p>
+    <p>
+      Domain understanding also helped identify important constraints. For example, a patient should not book an
+      appointment in the past, a doctor should not be double-booked for the same slot, and a patient should not
+      access another patient’s medical record. These constraints directly influence the functional and
+      non-functional requirements.
+    </p>
+
+    <h2>5.2&nbsp;&nbsp;Stakeholder Identification and Analysis</h2>
+    <p>
+      Stakeholders were identified based on direct and indirect interaction with the system. Patients are primary
+      users because they initiate bookings and consume healthcare services. Doctors are primary users because
+      they manage availability, appointments, records, and prescriptions. Administrators monitor the system and
+      require summary information for hospital operations. Hospital staff benefit from reduced manual workload and
+      more consistent data.
+    </p>
+    <p>
+      Each stakeholder has a different goal. Patients expect simple booking and easy access to their records.
+      Doctors expect accurate visit queues and efficient record entry. Administrators expect reliable reporting and
+      system visibility. These goals are reflected in the role-specific requirements.
+    </p>
+  </section>
+
+  <section class="page">
+    <h2>5.3&nbsp;&nbsp;Requirement Elicitation</h2>
+    <p>
+      Requirements were elicited by analyzing common hospital workflows and reviewing the features expected in
+      an appointment and record management system. The elicitation process considered the normal flow of
+      patient registration, doctor search, slot selection, appointment booking, consultation, medical record creation,
+      prescription issue, and patient record viewing.
+    </p>
+    <p>
+      Exceptional scenarios were also considered. These include appointment cancellation, rescheduling, deleting a
+      booking, unavailable doctor slots, unauthorized record access, missing patient or doctor profiles, and slot
+      conflict handling. Considering such scenarios improves requirement completeness and helps guide backend
+      validation.
+    </p>
+
+    <h2>5.4&nbsp;&nbsp;Requirement Analysis and Classification</h2>
+    <p>
+      After elicitation, requirements were analyzed to remove duplication, resolve ambiguity, and classify behavior.
+      Requirements were separated into functional requirements and non-functional requirements. Functional
+      requirements describe system behavior such as login, booking, rescheduling, record creation, prescription
+      creation, and report viewing. Non-functional requirements describe quality expectations such as security,
+      reliability, usability, maintainability, performance, and privacy.
+    </p>
+    <p>
+      The requirements were also checked for feasibility against the chosen technology stack. The React frontend,
+      Express backend, Sequelize ORM, MySQL database, JWT authentication, and REST API structure support the
+      required functionality. Automated backend tests using Jest and Supertest support requirement verification.
+    </p>
+
+    <h2>5.5&nbsp;&nbsp;Requirement Specification and Documentation</h2>
+    <p>
+      The final requirements are documented in this SRS using consistent language and numbered sections. The
+      specification avoids unnecessary implementation detail where possible, but it identifies important system
+      behavior and data relationships. Requirements are written to be understandable by developers, testers,
+      project guides, and evaluators.
+    </p>
+    <p>
+      The document also supports traceability because each major requirement maps to visible modules in the
+      project, such as authentication, doctor availability, appointment management, medical records, prescriptions,
+      notifications, and reports. This makes the SRS useful during design, implementation, testing, and viva
+      preparation.
+    </p>
+  </section>
+
+  <section class="page">
+    <h1>6&nbsp;&nbsp;Functional Requirements</h1>
+
+    <h2>6.1&nbsp;&nbsp;Patient Module</h2>
+    <p>
+      The system shall allow patients to register and log in securely using email and password credentials. After
+      login, patients shall access a patient dashboard that displays upcoming appointments, recent medical
+      records, and available doctors. The system shall store patient profile information such as age, gender, phone,
+      address, and blood group.
+    </p>
+    <p>
+      The system shall allow patients to view doctors and filter them by name or specialization. Patients shall book
+      appointments only from available doctor slots stored in the database. The system shall prevent bookings for
+      past dates and shall prevent duplicate bookings for the same doctor, date, and time slot.
+    </p>
+    <p>
+      Patients shall be able to view, reschedule, cancel, and delete their own appointments. Rescheduling shall use
+      available slots for the selected doctor. Cancelled appointments shall remain visible with cancelled status,
+      while deleted appointments shall be removed from both the patient list and the doctor dashboard because the
+      appointment record is deleted from the database.
+    </p>
+    <p>
+      Patients shall be able to view their medical records and prescriptions. The system shall display visit date,
+      diagnosis, treatment, notes, doctor name, medicines, and dosage instructions. Patients shall also be able to
+      print a prescription sheet from the record view.
+    </p>
+
+    <h2>6.2&nbsp;&nbsp;Doctor Module</h2>
+    <p>
+      The system shall allow doctors to register and log in securely. Doctor registration shall store specialization,
+      qualification, experience, and consultation fee. After login, doctors shall access a doctor dashboard that
+      displays appointment statistics, upcoming visits, availability slots, and recent medical records.
+    </p>
+    <p>
+      Doctors shall be able to create availability slots by selecting a date, start time, and end time. Doctors shall
+      also be able to delete open availability slots. The system shall prevent deletion of a slot that already has a
+      booked appointment, so existing patient bookings remain protected.
+    </p>
+    <p>
+      Doctors shall be able to view upcoming booked appointments assigned to them. For each appointment, the
+      system shall display doctor details, patient details, appointment date, appointment time, status, and reason.
+      Doctors shall be able to complete a visit by entering diagnosis, treatment, notes, and visit date.
+    </p>
+    <p>
+      During visit completion, doctors may optionally create a prescription by entering medicines and dosage
+      instructions. When the visit is completed, the system shall create a medical record, create the prescription if
+      provided, and update the appointment status to completed in the database.
+    </p>
+  </section>
+
+  <section class="page">
+    <h2>6.3&nbsp;&nbsp;Administrator Module</h2>
+    <p>
+      The system shall allow administrators to log in securely and access an admin dashboard. Administrators shall
+      be able to view summary information about patients, doctors, active appointments, medical records, and
+      appointment status counts. The system shall also provide reports grouped by specialization so that hospital
+      activity can be monitored.
+    </p>
+    <p>
+      Administrators shall have broader read access than patients and doctors. While patients are restricted to their
+      own records and doctors are restricted to their assigned records, administrators may view system-level
+      summaries for operational monitoring.
+    </p>
+
+    <h2>6.4&nbsp;&nbsp;Authentication and Authorization</h2>
+    <p>
+      The system shall authenticate users using secure password verification. Passwords shall be stored as bcrypt
+      hashes. After successful login or registration, the system shall issue a JWT token. Protected backend routes
+      shall validate the token, identify the user, and apply role-based access checks.
+    </p>
+    <p>
+      Role-based authorization shall ensure that patients cannot create medical records, doctors cannot book
+      patient appointments from the patient endpoint, and users cannot access records outside their permitted
+      scope. These controls protect healthcare privacy and preserve correct workflow behavior.
+    </p>
+
+    <h2>6.5&nbsp;&nbsp;Appointment Management</h2>
+    <p>
+      The system shall maintain appointments with patient, doctor, appointment date, appointment time, reason,
+      and status. The allowed appointment statuses shall include booked, completed, and cancelled. The system
+      shall support booking, listing, rescheduling, cancellation, deletion, and completion.
+    </p>
+    <p>
+      Appointment booking and rescheduling shall require a valid availability slot. The system shall check for
+      conflicts before creating or updating a booked appointment. The doctor dashboard shall show only the
+      doctor’s appointments, and the patient dashboard shall show only the patient’s appointments.
+    </p>
+  </section>
+
+  <section class="page">
+    <h2>6.6&nbsp;&nbsp;Medical Record and Prescription Management</h2>
+    <p>
+      The system shall allow doctors to create medical records for patients. Each medical record shall contain
+      patient ID, doctor ID, diagnosis, treatment, notes, and visit date. Medical records shall be linked to the
+      correct patient and doctor. Patients shall be able to view only their own medical records.
+    </p>
+    <p>
+      The system shall allow doctors to create prescriptions linked to medical records. Each prescription shall
+      contain medical record ID, patient ID, doctor ID, medicines, and dosage instructions. The system shall verify
+      that the prescription matches the patient and doctor of the selected medical record.
+    </p>
+
+    <h2>6.7&nbsp;&nbsp;Notification and Reporting</h2>
+    <p>
+      The system shall create notifications for appointment and record-related events. Patients and doctors shall be
+      able to view their own notifications and mark them as read. Notifications improve communication and reduce
+      the chance of missed appointments or unnoticed updates.
+    </p>
+    <p>
+      The system shall provide summary reports for administrators. Reports shall include counts of booked,
+      completed, and cancelled appointments, as well as doctor counts grouped by specialization. These reports
+      support hospital monitoring and academic demonstration of analytics functionality.
+    </p>
+
+    <h1>7&nbsp;&nbsp;Non-Functional Requirements</h1>
+
+    <h2>7.1&nbsp;&nbsp;Performance</h2>
+    <p>
+      The system should provide fast response times for common actions such as login, doctor listing, appointment
+      booking, appointment listing, and medical record viewing. Database indexes and query filters should support
+      common searches by patient, doctor, date, and status.
+    </p>
+
+    <h2>7.2&nbsp;&nbsp;Security</h2>
+    <p>
+      The system should protect user accounts and medical data using secure authentication, bcrypt password
+      hashing, JWT validation, and role-based authorization. Sensitive routes should not be accessible without a
+      valid token.
+    </p>
+  </section>
+
+  <section class="page">
+    <h2>7.3&nbsp;&nbsp;Privacy</h2>
+    <p>
+      Patients should access only their own appointments, records, prescriptions, and notifications. Doctors should
+      access only appointments and records assigned to their doctor profile. Administrators should use broader
+      visibility only for monitoring and reporting purposes.
+    </p>
+
+    <h2>7.4&nbsp;&nbsp;Reliability and Availability</h2>
+    <p>
+      The system should handle failed requests gracefully and show meaningful error messages. Backend validation
+      should prevent invalid state transitions, unavailable slot bookings, duplicate appointment conflicts, and
+      unauthorized changes.
+    </p>
+
+    <h2>7.5&nbsp;&nbsp;Usability</h2>
+    <p>
+      The user interface should be simple, role-specific, and easy to navigate. Patients should be able to book,
+      reschedule, cancel, delete, and view records without technical knowledge. Doctors should be able to manage
+      slots and complete visits from a single dashboard.
+    </p>
+
+    <h2>7.6&nbsp;&nbsp;Scalability and Maintainability</h2>
+    <p>
+      The system should be modular so that features can be extended without major rewrites. The frontend should
+      use reusable components and API clients. The backend should separate routes, controllers, middleware,
+      models, and utility functions.
+    </p>
+
+    <h2>7.7&nbsp;&nbsp;Testability</h2>
+    <p>
+      Backend behavior should be verified using automated tests. Authentication, appointment booking, deletion,
+      availability, record creation, prescription creation, and role-based access should be covered by route-level
+      tests wherever possible.
+    </p>
+
+    <h1>8&nbsp;&nbsp;Constraints</h1>
+    <p>
+      The system depends on reliable internet connectivity and a running backend API. Since the system stores
+      healthcare-related information, access control and privacy rules must be enforced carefully. The current
+      version does not include payment gateway integration, video consultation, lab integration, insurance claim
+      processing, or full hospital ERP inventory and billing.
+    </p>
+    <p>
+      The system also depends on the correctness of doctor availability data. Patients can book only the slots
+      created by doctors. If a doctor has not added availability, patients will not see appointment times for that
+      doctor.
+    </p>
+  </section>
+
+  <section class="page">
+    <h1>9&nbsp;&nbsp;Hardware and Software Requirements</h1>
+    <p>
+      The successful implementation and operation of the Smart Hospital Appointment and Record Management
+      System require a suitable combination of hardware and software resources. These requirements ensure that
+      the system can run reliably, support concurrent users, protect data, and provide a responsive user
+      experience.
+    </p>
+
+    <h2 class="indent-heading">9.1&nbsp;&nbsp;Hardware Requirements</h2>
+    <p>
+      The hardware infrastructure must support web application hosting, backend request processing, database
+      storage, and browser-based access from client devices. The requirements can be divided into server-side,
+      client-side, and networking hardware.
+    </p>
+
+    <h3 class="indent-heading">9.1.1&nbsp;&nbsp;Server-Side Hardware Requirements</h3>
+    <p>
+      The backend server should have sufficient processing power and memory to handle authentication,
+      appointment requests, database operations, notification logic, and report generation. For production use, the
+      server may be hosted on a cloud platform or dedicated hospital infrastructure.
+    </p>
+    <p>Key server-side hardware requirements include:</p>
+    <ul>
+      <li>Multi-core processor for concurrent request handling.</li>
+      <li>Adequate RAM for Node.js services, database connections, and caching if added later.</li>
+      <li>SSD storage for fast database access and application deployment.</li>
+      <li>Backup storage for database recovery and data protection.</li>
+      <li>Optional load balancer for future multi-server deployment.</li>
+    </ul>
+
+    <h3 class="indent-heading">9.1.2&nbsp;&nbsp;Client-Side Hardware Requirements</h3>
+    <p>
+      Client-side hardware includes devices used by patients, doctors, and administrators. Since the project is a
+      web application, users can access the system through modern browsers on laptops, desktops, tablets, or
+      smartphones.
+    </p>
+    <ul>
+      <li>Patient devices: smartphone, tablet, laptop, or desktop with internet connectivity.</li>
+      <li>Doctor devices: laptop, desktop, or tablet for dashboard and record entry.</li>
+      <li>Administrator devices: laptop or desktop for reports and monitoring.</li>
+    </ul>
+  </section>
+
+  <section class="page">
+    <h3 class="indent-heading">9.1.3&nbsp;&nbsp;Networking Hardware Requirements</h3>
+    <p>
+      Networking infrastructure is required for communication between the frontend, backend API, and database.
+      Stable connectivity is important because appointment booking and medical record access depend on real-time
+      server communication.
+    </p>
+    <ul>
+      <li>Reliable internet connectivity for client devices.</li>
+      <li>Secure local or cloud network for backend and database communication.</li>
+      <li>Firewall or network access rules to protect backend and database services.</li>
+    </ul>
+
+    <h2 class="indent-heading">9.2&nbsp;&nbsp;Software Requirements</h2>
+    <p>
+      Software requirements define the operating environment, development platform, database system, browser
+      support, and third-party tools needed for implementation and operation.
+    </p>
+
+    <h3 class="indent-heading">9.2.1&nbsp;&nbsp;Server-Side Software Requirements</h3>
+    <p>
+      The backend software environment handles business logic, authentication, authorization, persistence, and
+      reporting. The project uses a RESTful API structure and a relational database.
+    </p>
+    <ul>
+      <li>Operating System: macOS, Linux, or Windows for development; Linux preferred for deployment.</li>
+      <li>Runtime: Node.js for backend execution.</li>
+      <li>Backend Framework: Express.js.</li>
+      <li>Database Management System: MySQL.</li>
+      <li>ORM: Sequelize for model definitions and database interaction.</li>
+      <li>Authentication Tools: JWT and bcrypt.</li>
+      <li>Testing Tools: Jest and Supertest.</li>
+    </ul>
+
+    <h3 class="indent-heading">9.2.2&nbsp;&nbsp;Client-Side Software Requirements</h3>
+    <p>
+      The frontend software environment provides the graphical user interface for all roles. It should support
+      modern browsers and responsive layouts.
+    </p>
+    <ul>
+      <li>Frontend Library: React.</li>
+      <li>Build Tool: Vite.</li>
+      <li>Styling: Tailwind CSS.</li>
+      <li>Routing: React Router.</li>
+      <li>HTTP Client: Axios.</li>
+      <li>Browsers: Chrome, Firefox, Safari, Edge, or other modern browsers.</li>
+    </ul>
+  </section>
+
+  <section class="page">
+    <h3 class="indent-heading">9.2.3&nbsp;&nbsp;Third-Party Software and API Integrations</h3>
+    <p>
+      The current project uses internal REST APIs for the main hospital workflows. It is designed so that
+      additional integrations can be added later if required.
+    </p>
+    <ul>
+      <li>Email or SMTP service for appointment and record notifications.</li>
+      <li>Cloud hosting platform for frontend and backend deployment.</li>
+      <li>Database backup tools for MySQL data protection.</li>
+      <li>Optional payment gateway APIs for future consultation fee payments.</li>
+      <li>Optional video consultation APIs for future telemedicine support.</li>
+    </ul>
+
+    <h3 class="indent-heading">9.2.4&nbsp;&nbsp;Security and Support Software</h3>
+    <p>
+      Security and support software are needed to protect sensitive healthcare data and maintain operational
+      stability.
+    </p>
+    <ul>
+      <li>HTTPS certificates for encrypted communication in deployment.</li>
+      <li>Authentication and authorization middleware.</li>
+      <li>Database backup and restore tools.</li>
+      <li>Logging and monitoring tools for backend health and error tracking.</li>
+      <li>Firewall or access-control configuration for database protection.</li>
+    </ul>
+
+    <h1>10&nbsp;&nbsp;Conclusion</h1>
+    <p>
+      This paper presented a detailed Software Requirement Specification for a Smart Hospital Appointment and
+      Record Management System. The specification captures the purpose, scope, stakeholders, requirement
+      engineering approach, functional requirements, non-functional requirements, constraints, and hardware and
+      software requirements of the proposed system.
+    </p>
+    <p>
+      The system provides practical healthcare workflows such as real doctor availability, patient appointment
+      booking, rescheduling, cancellation, deletion, doctor visit completion, medical record creation, prescription
+      management, notifications, and administrative reporting. The resulting SRS provides a strong foundation for
+      design, implementation, testing, evaluation, and future enhancement of the project.
+    </p>
+  </section>
+</body>
+</html>

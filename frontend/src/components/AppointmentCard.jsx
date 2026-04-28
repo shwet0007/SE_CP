@@ -1,21 +1,26 @@
 import React from 'react';
-import { CalendarClock, Stethoscope, UserCircle2 } from 'lucide-react';
+import { CalendarClock, CalendarPlus, CheckCircle2, Stethoscope, Trash2, UserCircle2, XCircle } from 'lucide-react';
 import Badge from './Badge';
-import { specializations, doctors, patients } from '../data/mockData';
 
 const getDoctor = (appointment) =>
-  appointment.Doctor ||
-  doctors.find((d) => d.id === appointment.doctorId) || { name: 'Doctor', specializationId: null };
+  appointment.Doctor || { name: appointment.doctorId ? `Doctor #${appointment.doctorId}` : 'Doctor', specializationId: null };
 
 const getPatient = (appointment) =>
-  appointment.Patient || patients.find((p) => p.id === appointment.patientId) || { id: appointment.patientId };
+  appointment.Patient || { id: appointment.patientId };
 
 const getSpecialization = (appointment, doctor) => {
-  const specializationId = appointment.Doctor?.specializationId ?? appointment.specializationId ?? doctor?.specializationId;
-  return appointment.Doctor?.Specialization?.name || specializations.find((s) => s.id === specializationId)?.name || 'Specialist';
+  return appointment.Doctor?.Specialization?.name || doctor?.Specialization?.name || appointment.specializationName || 'Specialist';
 };
 
-export default function AppointmentCard({ appointment }) {
+export default function AppointmentCard({
+  appointment,
+  onCancel,
+  onComplete,
+  onDelete,
+  onReschedule,
+  deleting = false,
+  updating = false
+}) {
   const doctor = getDoctor(appointment);
   const patient = getPatient(appointment);
   return (
@@ -28,7 +33,57 @@ export default function AppointmentCard({ appointment }) {
             <p className="text-xs text-slate-500">{getSpecialization(appointment, doctor)}</p>
           </div>
         </div>
-        <Badge label={appointment.status} variant={appointment.status} />
+        <div className="flex items-center gap-2">
+          <Badge label={appointment.status} variant={appointment.status} />
+          {onReschedule && appointment.status === 'booked' && (
+            <button
+              type="button"
+              onClick={() => onReschedule(appointment)}
+              disabled={updating}
+              title="Reschedule appointment"
+              aria-label="Reschedule appointment"
+              className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <CalendarPlus size={15} />
+            </button>
+          )}
+          {onCancel && appointment.status === 'booked' && (
+            <button
+              type="button"
+              onClick={() => onCancel(appointment)}
+              disabled={updating}
+              title="Cancel appointment"
+              aria-label="Cancel appointment"
+              className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-amber-100 text-amber-600 transition hover:bg-amber-50 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <XCircle size={15} />
+            </button>
+          )}
+          {onComplete && appointment.status === 'booked' && (
+            <button
+              type="button"
+              onClick={() => onComplete(appointment)}
+              disabled={updating}
+              title="Complete visit"
+              aria-label="Complete visit"
+              className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-emerald-100 text-emerald-600 transition hover:bg-emerald-50 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <CheckCircle2 size={15} />
+            </button>
+          )}
+          {onDelete && (
+            <button
+              type="button"
+              onClick={() => onDelete(appointment)}
+              disabled={deleting}
+              title="Delete appointment"
+              aria-label="Delete appointment"
+              className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-rose-100 text-rose-600 transition hover:bg-rose-50 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <Trash2 size={15} />
+            </button>
+          )}
+        </div>
       </div>
       <div className="grid grid-cols-2 gap-3 text-sm text-slate-600 md:grid-cols-3">
         <div className="flex items-center gap-2">

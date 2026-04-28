@@ -14,3 +14,7 @@ export const updateAppointment = async (id, payload) => {
   const { data } = await api.patch(`/appointments/${id}`, payload);
   return data;
 };
+
+export const deleteAppointment = async (id) => {
+  await api.delete(`/appointments/${id}`);
+};

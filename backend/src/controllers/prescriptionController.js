@@ -1,7 +1,13 @@
-import { Doctor, MedicalRecord, Patient, Prescription } from '../models/index.js';
+import { Doctor, MedicalRecord, Patient, Prescription, User } from '../models/index.js';
 
 const getPatientProfile = (userId) => Patient.findOne({ where: { userId } });
 const getDoctorProfile = (userId) => Doctor.findOne({ where: { userId } });
+
+const prescriptionIncludes = [
+  { model: MedicalRecord },
+  { model: Doctor, include: [{ model: User, attributes: ['name', 'email'] }] },
+  { model: Patient, include: [{ model: User, attributes: ['name', 'email'] }] }
+];
 
 export const listPrescriptions = async (req, res) => {
   const { recordId, patientId, doctorId } = req.query;
@@ -19,7 +25,7 @@ export const listPrescriptions = async (req, res) => {
     if (patientId) where.patientId = patientId;
     if (doctorId) where.doctorId = doctorId;
   }
-  const data = await Prescription.findAll({ where });
+  const data = await Prescription.findAll({ where, include: prescriptionIncludes });
   res.json(data);
 };
 
@@ -49,5 +55,6 @@ export const createPrescription = async (req, res) => {
     return res.status(400).json({ message: 'Prescription must match the medical record patient and doctor' });
   }
   const pres = await Prescription.create({ medicalRecordId, patientId, doctorId, medicines, dosageInstructions });
-  res.status(201).json(pres);
+  const prescriptionWithDetails = await Prescription.findByPk(pres.id, { include: prescriptionIncludes });
+  res.status(201).json(prescriptionWithDetails);
 };

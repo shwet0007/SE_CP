@@ -1,11 +1,31 @@
 import { Op } from 'sequelize';
-import { Appointment, Doctor, Notification, Patient, Specialization, User } from '../models/index.js';
+import { Appointment, Doctor, DoctorAvailability, Notification, Patient, Specialization, User } from '../models/index.js';
 
 const VALID_STATUSES = ['booked', 'completed', 'cancelled'];
 
 const getPatientProfile = (userId) => Patient.findOne({ where: { userId } });
 const getDoctorProfile = (userId) => Doctor.findOne({ where: { userId } });
 const today = () => new Date().toISOString().slice(0, 10);
+
+const appointmentIncludes = [
+  {
+    model: Doctor,
+    include: [
+      { model: Specialization, attributes: ['name'] },
+      { model: User, attributes: ['name', 'email'] }
+    ]
+  },
+  { model: Patient, include: [{ model: User, attributes: ['name', 'email'] }] }
+];
+
+const hasAvailableSlot = (doctorId, appointmentDate, appointmentTime) =>
+  DoctorAvailability.findOne({
+    where: {
+      doctorId,
+      availableDate: appointmentDate,
+      startTime: appointmentTime
+    }
+  });
 
 export const listAppointments = async (req, res) => {
   const { status, date, doctorId, patientId } = req.query;
@@ -32,16 +52,7 @@ export const listAppointments = async (req, res) => {
       ['appointmentDate', 'DESC'],
       ['appointmentTime', 'ASC']
     ],
-    include: [
-      {
-        model: Doctor,
-        include: [
-          { model: Specialization, attributes: ['name'] },
-          { model: User, attributes: ['name', 'email'] }
-        ]
-      },
-      { model: Patient, include: [{ model: User, attributes: ['name', 'email'] }] }
-    ]
+    include: appointmentIncludes
   });
   res.json(data);
 };
@@ -69,6 +80,8 @@ export const bookAppointment = async (req, res) => {
   const [patient, doctor] = await Promise.all([Patient.findByPk(patientId), Doctor.findByPk(doctorId)]);
   if (!patient) return res.status(404).json({ message: 'Patient not found' });
   if (!doctor) return res.status(404).json({ message: 'Doctor not found' });
+  const slot = await hasAvailableSlot(doctorId, appointmentDate, appointmentTime);
+  if (!slot) return res.status(400).json({ message: 'Selected slot is not available for this doctor' });
 
   const existing = await Appointment.findOne({
     where: {
@@ -102,7 +115,8 @@ export const bookAppointment = async (req, res) => {
       type: 'appointment'
     }
   ]);
-  res.status(201).json(appt);
+  const appointmentWithDetails = await Appointment.findByPk(appt.id, { include: appointmentIncludes });
+  res.status(201).json(appointmentWithDetails);
 };
 
 export const updateAppointment = async (req, res) => {
@@ -132,6 +146,9 @@ export const updateAppointment = async (req, res) => {
     return res.status(400).json({ message: 'Appointment date cannot be in the past' });
   }
   if ((appointmentDate || appointmentTime) && (status ?? appt.status) === 'booked') {
+    const slot = await hasAvailableSlot(appt.doctorId, nextDate, nextTime);
+    if (!slot) return res.status(400).json({ message: 'Selected slot is not available for this doctor' });
+
     const existing = await Appointment.findOne({
       where: {
         id: { [Op.ne]: appt.id },
@@ -151,5 +168,22 @@ export const updateAppointment = async (req, res) => {
   if (reason !== undefined) updates.reason = reason;
 
   await appt.update(updates);
-  res.json(appt);
+  const appointmentWithDetails = await Appointment.findByPk(appt.id, { include: appointmentIncludes });
+  res.json(appointmentWithDetails);
+};
+
+export const deleteAppointment = async (req, res) => {
+  const { id } = req.params;
+  const appt = await Appointment.findByPk(id);
+  if (!appt) return res.status(404).json({ message: 'Not found' });
+
+  if (req.user.role === 'patient') {
+    const patient = await getPatientProfile(req.user.id);
+    if (!patient || appt.patientId !== patient.id) return res.status(404).json({ message: 'Not found' });
+  } else if (req.user.role !== 'admin') {
+    return res.status(403).json({ message: 'Only patients can delete their appointments' });
+  }
+
+  await appt.destroy();
+  res.status(204).send();
 };

@@ -2,6 +2,7 @@ import { hashPassword } from '../middleware/auth.js';
 import {
   Appointment,
   Doctor,
+  DoctorAvailability,
   MedicalRecord,
   Notification,
   Patient,
@@ -86,6 +87,20 @@ export async function seed() {
     ],
     { returning: true }
   );
+
+  const futureDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+
+  await DoctorAvailability.bulkCreate([
+    {
+      doctorId: doctor1.id,
+      availableDate: new Date().toISOString().slice(0, 10),
+      startTime: '10:30',
+      endTime: '11:00'
+    },
+    { doctorId: doctor1.id, availableDate: futureDate, startTime: '11:00', endTime: '11:30' },
+    { doctorId: doctor1.id, availableDate: futureDate, startTime: '13:30', endTime: '14:00' },
+    { doctorId: doctor2.id, availableDate: futureDate, startTime: '12:30', endTime: '13:00' }
+  ]);
 
   await Appointment.bulkCreate([
     {

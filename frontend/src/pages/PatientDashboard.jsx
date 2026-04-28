@@ -4,12 +4,6 @@ import DashboardLayout from '../layouts/DashboardLayout';
 import StatCard from '../components/StatCard';
 import AppointmentCard from '../components/AppointmentCard';
 import SectionCard from '../components/SectionCard';
-import {
-  appointments as mockAppointments,
-  doctors as mockDoctors,
-  medicalRecords as mockRecords,
-  specializations
-} from '../data/mockData';
 import { useAuth } from '../state/AuthContext';
 import { fetchAppointments } from '../api/appointments';
 import { fetchRecords } from '../api/records';
@@ -18,15 +12,17 @@ import { fetchDoctors } from '../api/doctors';
 export default function PatientDashboard() {
   const { user } = useAuth();
   const [search, setSearch] = useState('');
-  const [appointments, setAppointments] = useState(mockAppointments);
-  const [records, setRecords] = useState(mockRecords);
-  const [doctors, setDoctors] = useState(mockDoctors);
+  const [appointments, setAppointments] = useState([]);
+  const [records, setRecords] = useState([]);
+  const [doctors, setDoctors] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const patientId = user?.role === 'patient' ? user?.patientId || user.id : 1;
 
   useEffect(() => {
     const load = async () => {
       setLoading(true);
+      setError('');
       try {
         const [apptData, recordData, doctorData] = await Promise.all([
           fetchAppointments({ patientId }),
@@ -40,12 +36,13 @@ export default function PatientDashboard() {
             id: d.id,
             name: d.User?.name || d.name,
             specializationId: d.specializationId || d.specialization_id || d.Specialization?.id,
+            specializationName: d.Specialization?.name || d.specializationName || 'Specialist',
             experienceYears: d.experienceYears || d.experience_years,
             consultationFee: d.consultationFee || d.consultation_fee
           }))
         );
-      } catch (_) {
-        setDoctors(mockDoctors);
+      } catch (err) {
+        setError(err.response?.data?.message || 'Failed to load patient workspace data');
       } finally {
         setLoading(false);
       }
@@ -64,16 +61,12 @@ export default function PatientDashboard() {
       icon: CalendarDays
     },
     { label: 'Medical records', value: myRecords.length, delta: 'Updated weekly', icon: FileText },
-    { label: 'Consult doctors', value: doctors.length, delta: '6 specialties', icon: Stethoscope }
+    { label: 'Consult doctors', value: doctors.length, delta: 'Available now', icon: Stethoscope }
   ];
 
   const filteredDoctors = useMemo(() => {
     if (!search) return doctors;
-    return doctors.filter((d) =>
-      `${d.name} ${specializations.find((s) => s.id === d.specializationId)?.name}`
-        .toLowerCase()
-        .includes(search.toLowerCase())
-    );
+    return doctors.filter((d) => `${d.name} ${d.specializationName}`.toLowerCase().includes(search.toLowerCase()));
   }, [search, doctors]);
 
   return (
@@ -84,16 +77,20 @@ export default function PatientDashboard() {
         ))}
       </div>
 
+      {error && <p className="text-sm text-rose-600">{error}</p>}
+
       <div className="grid gap-4 lg:grid-cols-3">
         <SectionCard title="Next appointments" action={<p className="text-xs text-slate-500">Updated live</p>}>
           <div className="space-y-3">
-            {myAppointments
-              .filter((a) => a.status === 'booked')
-              .slice(0, 3)
-              .map((appt) => (
-                <AppointmentCard key={appt.id} appointment={appt} />
-              ))}
-            {myAppointments.filter((a) => a.status === 'booked').length === 0 && (
+            {loading ? (
+              <p className="text-sm text-slate-500">Loading appointments...</p>
+            ) : (
+              myAppointments
+                .filter((a) => a.status === 'booked')
+                .slice(0, 3)
+                .map((appt) => <AppointmentCard key={appt.id} appointment={appt} />)
+            )}
+            {!loading && myAppointments.filter((a) => a.status === 'booked').length === 0 && (
               <p className="text-sm text-slate-500">No bookings yet. Use the Appointment tab to schedule.</p>
             )}
           </div>
@@ -104,14 +101,16 @@ export default function PatientDashboard() {
           action={<span className="text-xs text-slate-500">Last updated {myRecords[0]?.visitDate || 'N/A'}</span>}
         >
           <div className="space-y-3">
-            {myRecords.slice(0, 3).map((rec) => (
+            {loading ? (
+              <p className="text-sm text-slate-500">Loading records...</p>
+            ) : myRecords.slice(0, 3).map((rec) => (
               <div key={rec.id} className="rounded-2xl border border-slate-100 bg-white p-3 text-sm text-slate-700">
                 <p className="font-semibold text-slate-900">{rec.diagnosis}</p>
                 <p className="text-xs text-slate-500">Visit: {rec.visitDate}</p>
                 <p className="mt-1 text-slate-600">Treatment: {rec.treatment}</p>
               </div>
             ))}
-            {myRecords.length === 0 && <p className="text-sm text-slate-500">No records found.</p>}
+            {!loading && myRecords.length === 0 && <p className="text-sm text-slate-500">No records found.</p>}
           </div>
         </SectionCard>
 
@@ -135,11 +134,11 @@ export default function PatientDashboard() {
                   <div>
                     <p className="font-semibold text-slate-900">{doc.name}</p>
                     <p className="text-xs text-slate-500">
-                      {specializations.find((s) => s.id === doc.specializationId)?.name} • {doc.experienceYears} yrs exp
+                      {doc.specializationName} • {doc.experienceYears || 0} yrs exp
                     </p>
                   </div>
                   <span className="rounded-full bg-brand-50 px-3 py-1 text-xs font-semibold text-brand-700">
-                    ₹{doc.consultationFee}
+                    ₹{doc.consultationFee || 0}
                   </span>
                 </div>
               ))

@@ -4,6 +4,12 @@ import { MedicalRecord, Prescription, Doctor, Patient, User } from '../models/in
 const getPatientProfile = (userId) => Patient.findOne({ where: { userId } });
 const getDoctorProfile = (userId) => Doctor.findOne({ where: { userId } });
 
+const recordIncludes = [
+  { model: Prescription },
+  { model: Doctor, include: [{ model: User, attributes: ['name', 'email'] }] },
+  { model: Patient, include: [{ model: User, attributes: ['name', 'email'] }] }
+];
+
 export const listRecords = async (req, res) => {
   const { patientId, doctorId, date, q } = req.query;
   const where = {};
@@ -29,11 +35,7 @@ export const listRecords = async (req, res) => {
   }
   const data = await MedicalRecord.findAll({
     where,
-    include: [
-      { model: Prescription },
-      { model: Doctor, include: [{ model: User, attributes: ['name', 'email'] }] },
-      { model: Patient, include: [{ model: User, attributes: ['name', 'email'] }] }
-    ],
+    include: recordIncludes,
     order: [['visitDate', 'DESC']]
   });
   res.json(data);
@@ -55,7 +57,8 @@ export const createRecord = async (req, res) => {
   if (!patient) return res.status(404).json({ message: 'Patient not found' });
   if (!doctor) return res.status(404).json({ message: 'Doctor not found' });
   const rec = await MedicalRecord.create({ patientId, doctorId, diagnosis, treatment, notes, visitDate });
-  res.status(201).json(rec);
+  const recordWithDetails = await MedicalRecord.findByPk(rec.id, { include: recordIncludes });
+  res.status(201).json(recordWithDetails);
 };
 
 export const updateRecord = async (req, res) => {
@@ -74,5 +77,6 @@ export const updateRecord = async (req, res) => {
   if (notes !== undefined) updates.notes = notes;
   if (visitDate !== undefined) updates.visitDate = visitDate;
   await rec.update(updates);
-  res.json(rec);
+  const recordWithDetails = await MedicalRecord.findByPk(rec.id, { include: recordIncludes });
+  res.json(recordWithDetails);
 };
